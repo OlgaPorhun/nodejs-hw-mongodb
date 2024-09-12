@@ -12,12 +12,16 @@ function setupServer() {
   app.use(pino());
   app.use(express.json());
 
+  app.get('/', (req, res) => {
+    res.send('API is running');
+  });
+
   app.use('/contacts', contactsRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
 
-  const PORT = process.env.PORT || 3001;
+  const PORT = process.env.PORT || 3000;
   const server = app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });

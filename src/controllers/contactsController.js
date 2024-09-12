@@ -4,7 +4,7 @@ import {
   findAllContacts,
   createNewContact,
   updateContact,
-  deleteContact, // Додаємо функцію видалення контакту
+  deleteContact,
 } from '../services/contacts.js';
 import createError from 'http-errors';
 
@@ -109,26 +109,21 @@ export const updateContactById = async (req, res, next) => {
   }
 };
 
-// Додаємо функцію видалення контакту за ID
 export const deleteContactById = async (req, res, next) => {
   const { contactId } = req.params;
 
-  // Перевірка валідності ObjectId
   if (!mongoose.Types.ObjectId.isValid(contactId)) {
     return next(createError(400, 'Invalid ID format'));
   }
 
   try {
-    // Викликаємо функцію видалення контакту
     const result = await deleteContact(contactId);
 
-    // Якщо контакт не знайдено, повертаємо 404
     if (!result) {
       return next(createError(404, 'Contact not found'));
     }
 
-    // Якщо контакт успішно видалено, відправляємо статус 204 без тіла відповіді
-    return res.status(204).send(); // Статус 204: Успішно, без контенту
+    return res.status(204).send();
   } catch (error) {
     console.error('Error in deleteContactById controller:', error);
     return next(error);
