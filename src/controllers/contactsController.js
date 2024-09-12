@@ -1,7 +1,14 @@
 import mongoose from 'mongoose';
-import { findContactById, findAllContacts } from '../services/contacts.js';
+import {
+  findContactById,
+  findAllContacts,
+  createNewContact,
+  updateContact,
+  deleteContact, // Додаємо функцію видалення контакту
+} from '../services/contacts.js';
+import createError from 'http-errors';
 
-export const getContactById = async (req, res) => {
+export const getContactById = async (req, res, next) => {
   let { contactId } = req.params;
   contactId = contactId.trim();
 
@@ -9,33 +16,29 @@ export const getContactById = async (req, res) => {
 
   if (!mongoose.Types.ObjectId.isValid(contactId)) {
     console.log(`Invalid ID format: ${contactId}`);
-    return res.status(400).json({ message: 'Invalid ID format' });
+    return next(createError(400, 'Invalid ID format'));
   }
 
   try {
     const contact = await findContactById(contactId);
     console.log(`Result from findContactById: ${contact}`);
 
-    if (contact) {
-      return res.status(200).json({
-        status: 200,
-        message: `Successfully found contact with id ${contactId}!`,
-        data: contact,
-      });
-    } else {
-      return res.status(404).json({
-        message: 'Contact not found',
-      });
+    if (!contact) {
+      return next(createError(404, 'Contact not found'));
     }
+
+    return res.status(200).json({
+      status: 200,
+      message: `Successfully found contact with id ${contactId}!`,
+      data: contact,
+    });
   } catch (error) {
     console.error('Error in getContactById controller:', error);
-    return res.status(500).json({
-      message: 'Server error',
-    });
+    return next(error);
   }
 };
 
-export const getContacts = async (req, res) => {
+export const getContacts = async (req, res, next) => {
   try {
     const contacts = await findAllContacts();
     return res.status(200).json({
@@ -45,8 +48,89 @@ export const getContacts = async (req, res) => {
     });
   } catch (error) {
     console.error('Error in getContacts controller:', error);
-    return res.status(500).json({
-      message: 'Server error',
+    return next(error);
+  }
+};
+
+export const createContact = async (req, res, next) => {
+  const { name, phoneNumber, email, isFavourite, contactType } = req.body;
+
+  if (!name || !phoneNumber || !contactType) {
+    return next(createError(400, 'Missing required fields'));
+  }
+
+  try {
+    const newContact = await createNewContact({
+      name,
+      phoneNumber,
+      email,
+      isFavourite: isFavourite || false,
+      contactType,
     });
+
+    return res.status(201).json({
+      status: 201,
+      message: 'Successfully created a contact!',
+      data: newContact,
+    });
+  } catch (error) {
+    console.error('Error in createContact controller:', error);
+    return next(error);
+  }
+};
+
+export const updateContactById = async (req, res, next) => {
+  const { contactId } = req.params;
+  const updateData = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(contactId)) {
+    return next(createError(400, 'Invalid ID format'));
+  }
+
+  if (!Object.keys(updateData).length) {
+    return next(createError(400, 'No data provided for update'));
+  }
+
+  try {
+    const updatedContact = await updateContact(contactId, updateData);
+
+    if (!updatedContact) {
+      return next(createError(404, 'Contact not found'));
+    }
+
+    return res.status(200).json({
+      status: 200,
+      message: 'Successfully patched a contact!',
+      data: updatedContact,
+    });
+  } catch (error) {
+    console.error('Error in updateContactById controller:', error);
+    return next(error);
+  }
+};
+
+// Додаємо функцію видалення контакту за ID
+export const deleteContactById = async (req, res, next) => {
+  const { contactId } = req.params;
+
+  // Перевірка валідності ObjectId
+  if (!mongoose.Types.ObjectId.isValid(contactId)) {
+    return next(createError(400, 'Invalid ID format'));
+  }
+
+  try {
+    // Викликаємо функцію видалення контакту
+    const result = await deleteContact(contactId);
+
+    // Якщо контакт не знайдено, повертаємо 404
+    if (!result) {
+      return next(createError(404, 'Contact not found'));
+    }
+
+    // Якщо контакт успішно видалено, відправляємо статус 204 без тіла відповіді
+    return res.status(204).send(); // Статус 204: Успішно, без контенту
+  } catch (error) {
+    console.error('Error in deleteContactById controller:', error);
+    return next(error);
   }
 };
