@@ -1,9 +1,36 @@
 import Contact from '../models/Contact.js';
 import createError from 'http-errors';
 
+export const findAllContacts = async ({
+  skip = 0,
+  limit = 10,
+  sortBy = 'name',
+  sortOrder = 'asc',
+} = {}) => {
+  try {
+    const sortOption = { [sortBy]: sortOrder === 'asc' ? 1 : -1 };
+
+    if (sortBy !== '_id') {
+      sortOption._id = sortOrder === 'asc' ? 1 : -1;
+    }
+
+    const contacts = await Contact.find()
+      .skip(skip)
+      .limit(limit)
+      .sort(sortOption)
+      .collation({ locale: 'en', strength: 2 })
+      .select('-__v');
+
+    return contacts;
+  } catch (error) {
+    console.error('Error fetching contacts:', error);
+    throw createError(500, 'Error fetching contacts');
+  }
+};
+
 export const findContactById = async (contactId) => {
   try {
-    const contact = await Contact.findById(contactId);
+    const contact = await Contact.findById(contactId).select('-__v');
 
     if (!contact) {
       throw createError(404, `Contact with ID ${contactId} not found`);
@@ -17,21 +44,6 @@ export const findContactById = async (contactId) => {
       throw error;
     }
     throw createError(500, 'Error fetching contact');
-  }
-};
-
-export const findAllContacts = async () => {
-  try {
-    const contacts = await Contact.find();
-
-    if (contacts.length === 0) {
-      throw createError(404, 'No contacts found');
-    }
-
-    return contacts;
-  } catch (error) {
-    console.error('Error fetching contacts:', error);
-    throw createError(500, 'Error fetching contacts');
   }
 };
 
@@ -51,7 +63,7 @@ export const updateContact = async (contactId, updateData) => {
       contactId,
       { $set: updateData },
       { new: true },
-    );
+    ).select('-__v');
 
     if (!updatedContact) {
       throw createError(404, `Contact with ID ${contactId} not found`);

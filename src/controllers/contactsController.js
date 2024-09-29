@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import { Types } from 'mongoose';
 import {
   findContactById,
   findAllContacts,
@@ -7,24 +7,20 @@ import {
   deleteContact,
 } from '../services/contacts.js';
 import createError from 'http-errors';
+import Contact from '../models/Contact.js';
 
 export const getContactById = async (req, res, next) => {
   let { contactId } = req.params;
   contactId = contactId.trim();
 
-  console.log(`Received request to get contact with ID: ${contactId}`);
-
-  if (!mongoose.Types.ObjectId.isValid(contactId)) {
-    console.log(`Invalid ID format: ${contactId}`);
+  if (!Types.ObjectId.isValid(contactId)) {
     return next(createError(400, 'Invalid ID format'));
   }
 
   try {
     const contact = await findContactById(contactId);
-    console.log(`Result from findContactById: ${contact}`);
-
     if (!contact) {
-      return next(createError(404, 'Contact not found'));
+      return next(createError(404, `Contact not found`));
     }
 
     return res.status(200).json({
@@ -33,21 +29,76 @@ export const getContactById = async (req, res, next) => {
       data: contact,
     });
   } catch (error) {
-    console.error('Error in getContactById controller:', error);
     return next(error);
   }
 };
 
 export const getContacts = async (req, res, next) => {
+  const {
+    page = 1,
+    perPage = 10,
+    sortBy = 'name',
+    sortOrder = 'asc',
+    type,
+    isFavourite,
+  } = req.query;
+
+  const filter = {};
+
+  if (type && ['work', 'home', 'personal'].includes(type)) {
+    filter.contactType = type;
+  }
+
+  if (isFavourite !== undefined) {
+    filter.isFavourite = isFavourite === 'true';
+  }
+
+  const pageNumber = parseInt(page, 10);
+  const limit = parseInt(perPage, 10);
+  const skip = (pageNumber - 1) * limit;
+
   try {
-    const contacts = await findAllContacts();
+    const totalItems = await Contact.countDocuments(filter);
+    if (totalItems === 0) {
+      return res.status(200).json({
+        status: 200,
+        message: 'No contacts found!',
+        data: {
+          data: [],
+          page: pageNumber,
+          perPage: limit,
+          totalItems: 0,
+          totalPages: 0,
+          hasPreviousPage: false,
+          hasNextPage: false,
+        },
+      });
+    }
+
+    const contacts = await Contact.find(filter)
+      .skip(skip)
+      .limit(limit)
+      .sort({ [sortBy]: sortOrder === 'asc' ? 1 : -1 })
+      .select('-__v');
+
+    const totalPages = Math.ceil(totalItems / limit);
+    const hasPreviousPage = pageNumber > 1;
+    const hasNextPage = pageNumber < totalPages;
+
     return res.status(200).json({
       status: 200,
       message: 'Successfully found contacts!',
-      data: contacts,
+      data: {
+        data: contacts,
+        page: pageNumber,
+        perPage: limit,
+        totalItems,
+        totalPages,
+        hasPreviousPage,
+        hasNextPage,
+      },
     });
   } catch (error) {
-    console.error('Error in getContacts controller:', error);
     return next(error);
   }
 };
@@ -74,7 +125,6 @@ export const createContact = async (req, res, next) => {
       data: newContact,
     });
   } catch (error) {
-    console.error('Error in createContact controller:', error);
     return next(error);
   }
 };
@@ -83,7 +133,7 @@ export const updateContactById = async (req, res, next) => {
   const { contactId } = req.params;
   const updateData = req.body;
 
-  if (!mongoose.Types.ObjectId.isValid(contactId)) {
+  if (!Types.ObjectId.isValid(contactId)) {
     return next(createError(400, 'Invalid ID format'));
   }
 
@@ -93,18 +143,16 @@ export const updateContactById = async (req, res, next) => {
 
   try {
     const updatedContact = await updateContact(contactId, updateData);
-
     if (!updatedContact) {
       return next(createError(404, 'Contact not found'));
     }
 
     return res.status(200).json({
       status: 200,
-      message: 'Successfully patched a contact!',
+      message: 'Successfully updated the contact!',
       data: updatedContact,
     });
   } catch (error) {
-    console.error('Error in updateContactById controller:', error);
     return next(error);
   }
 };
@@ -112,7 +160,7 @@ export const updateContactById = async (req, res, next) => {
 export const deleteContactById = async (req, res, next) => {
   const { contactId } = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(contactId)) {
+  if (!Types.ObjectId.isValid(contactId)) {
     return next(createError(400, 'Invalid ID format'));
   }
 
@@ -125,7 +173,6 @@ export const deleteContactById = async (req, res, next) => {
 
     return res.status(204).send();
   } catch (error) {
-    console.error('Error in deleteContactById controller:', error);
     return next(error);
   }
 };
