@@ -67,13 +67,13 @@ export const loginUser = async (req, res, next) => {
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' ? true : false,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'None',
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
     res.cookie('sessionId', session._id, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' ? true : false,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'None',
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
@@ -102,13 +102,13 @@ export const refreshSession = async (req, res, next) => {
 
     res.cookie('refreshToken', newRefreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' ? true : false,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'None',
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
     res.cookie('sessionId', newSessionId, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' ? true : false,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'None',
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
@@ -137,13 +137,13 @@ export const logoutUser = async (req, res, next) => {
 
     res.clearCookie('refreshToken', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' ? true : false,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'None',
     });
 
     res.clearCookie('sessionId', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' ? true : false,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'None',
     });
 

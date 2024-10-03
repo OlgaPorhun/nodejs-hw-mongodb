@@ -11,17 +11,26 @@ import { authenticateToken } from './middlewares/authenticateToken.js';
 function setupServer() {
   const app = express();
 
-  app.use(cors());
-  app.use(pino());
   app.use(express.json());
+
   app.use(cookieParser());
+
+  app.use(
+    cors({
+      origin: 'https://nodejs-hw-mongodb-i55t.onrender.com',
+      credentials: true,
+    }),
+  );
+
+  app.set('trust proxy', 1);
+
+  app.use(pino());
 
   app.get('/', (_, res) => {
     res.send('API is running');
   });
 
   app.use('/contacts', contactsRouter);
-
   app.use('/auth', authRouter);
 
   app.get('/protected-route', authenticateToken, (req, res) => {
