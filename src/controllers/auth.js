@@ -57,7 +57,7 @@ export const loginUser = async (req, res, next) => {
       expiresIn: '30d',
     });
 
-    await Session.create({
+    const session = await Session.create({
       userId: user._id,
       accessToken,
       refreshToken,
@@ -67,7 +67,14 @@ export const loginUser = async (req, res, next) => {
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: 'None',
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+    res.cookie('sessionId', session._id, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: 'None',
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
@@ -77,19 +84,34 @@ export const loginUser = async (req, res, next) => {
       data: { accessToken },
     });
   } catch (error) {
+    console.log('Error during login:', error);
     next(error);
   }
 };
 
 export const refreshSession = async (req, res, next) => {
   try {
-    const { refreshToken } = req.cookies;
+    const { refreshToken, sessionId } = req.cookies;
 
-    if (!refreshToken) {
-      throw createError(401, 'Refresh token not provided');
+    if (!refreshToken || !sessionId) {
+      throw createError(401, 'Refresh token or session ID not provided');
     }
 
-    const { accessToken } = await refreshSessionService(refreshToken);
+    const { accessToken, newRefreshToken, newSessionId } =
+      await refreshSessionService(refreshToken);
+
+    res.cookie('refreshToken', newRefreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: 'None',
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+    res.cookie('sessionId', newSessionId, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: 'None',
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
 
     res.status(200).json({
       status: 200,
@@ -103,21 +125,31 @@ export const refreshSession = async (req, res, next) => {
 
 export const logoutUser = async (req, res, next) => {
   try {
-    const { refreshToken } = req.cookies;
+    const { refreshToken, sessionId } = req.cookies;
 
-    if (!refreshToken) {
-      throw createError(401, 'Refresh token not provided');
+    console.log('Cookies received during logout:', req.cookies);
+
+    if (!refreshToken || !sessionId) {
+      throw createError(401, 'Refresh token or session ID not provided');
     }
 
-    await logoutSessionService(refreshToken);
+    await logoutSessionService(sessionId);
 
     res.clearCookie('refreshToken', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: 'None',
+    });
+
+    res.clearCookie('sessionId', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: 'None',
     });
 
     res.status(204).send();
   } catch (error) {
+    console.log('Error during logout:', error);
     next(error);
   }
 };

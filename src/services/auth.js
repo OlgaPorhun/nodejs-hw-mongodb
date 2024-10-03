@@ -50,7 +50,7 @@ export const refreshSessionService = async (refreshToken) => {
       expiresIn: '30d',
     });
 
-    await Session.create({
+    const newSession = await Session.create({
       userId: user._id,
       accessToken: newAccessToken,
       refreshToken: newRefreshToken,
@@ -58,14 +58,18 @@ export const refreshSessionService = async (refreshToken) => {
       refreshTokenValidUntil: Date.now() + 30 * 24 * 60 * 60 * 1000,
     });
 
-    return { accessToken: newAccessToken };
+    return {
+      accessToken: newAccessToken,
+      newRefreshToken,
+      newSessionId: newSession._id,
+    };
   } catch (error) {
     throw createError(403, 'Invalid or expired refresh token');
   }
 };
 
-export const logoutSessionService = async (refreshToken) => {
-  const session = await Session.findOneAndDelete({ refreshToken });
+export const logoutSessionService = async (sessionId) => {
+  const session = await Session.findByIdAndDelete(sessionId);
   if (!session) {
     throw createError(404, 'Session not found');
   }
