@@ -1,12 +1,12 @@
 import { Types } from 'mongoose';
+import createError from 'http-errors';
+import { cloudinary } from '../config/cloudinaryConfig.js';
 import {
   findContactById,
-  findAllContacts,
   createNewContact,
   updateContact,
   deleteContact,
 } from '../services/contacts.js';
-import createError from 'http-errors';
 import Contact from '../models/Contact.js';
 
 export const getContacts = async (req, res, next) => {
@@ -93,10 +93,9 @@ export const getContactById = async (req, res, next) => {
       console.error(
         `Contact not found with id ${contactId} for user ${req.user._id}`,
       );
-      return next(createError(404, `Contact not found`));
+      return next(createError(404, 'Contact not found'));
     }
 
-    console.log('Contact found', contact);
     return res.status(200).json({
       status: 200,
       message: `Successfully found contact with id ${contactId}!`,
@@ -116,20 +115,12 @@ export const createContact = async (req, res, next) => {
     return next(createError(400, 'Missing required fields'));
   }
 
-  if (!req.user || !req.user._id) {
-    console.error('User ID is missing from the request');
-    return next(createError(401, 'Authorization failed. User ID is missing.'));
-  }
-
   try {
-    console.log('Creating contact with data:', {
-      name,
-      phoneNumber,
-      email,
-      isFavourite,
-      contactType,
-      userId: req.user._id,
-    });
+    let photoUrl = null;
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path);
+      photoUrl = result.secure_url;
+    }
 
     const newContact = await createNewContact({
       name,
@@ -138,9 +129,8 @@ export const createContact = async (req, res, next) => {
       isFavourite: isFavourite || false,
       contactType,
       userId: req.user._id,
+      photo: photoUrl,
     });
-
-    console.log('Successfully created contact:', newContact);
 
     return res.status(201).json({
       status: 201,
@@ -162,45 +152,29 @@ export const updateContactById = async (req, res, next) => {
     return next(createError(400, 'Invalid ID format'));
   }
 
-  if (!Object.keys(updateData).length) {
-    console.error('No data provided for update', updateData);
-    return next(createError(400, 'No data provided for update'));
-  }
-
   try {
-    console.log(
-      'Updating contact with ID:',
-      contactId,
-      'and data:',
-      updateData,
-    );
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path);
+      updateData.photo = result.secure_url;
+    }
+
     const updatedContact = await updateContact(
       contactId,
       updateData,
       req.user._id,
     );
     if (!updatedContact) {
-      console.error(
-        'Contact not found or not owned by user',
-        contactId,
-        req.user._id,
-      );
       return next(
-        createError(
-          404,
-          'Contact not found or you are not the owner of this contact',
-        ),
+        createError(404, 'Contact not found or you are not the owner'),
       );
     }
 
-    console.log('Successfully updated contact:', updatedContact);
     return res.status(200).json({
       status: 200,
       message: 'Successfully updated the contact!',
       data: updatedContact,
     });
   } catch (error) {
-    console.error('Error updating contact:', error);
     return next(error);
   }
 };
@@ -214,27 +188,15 @@ export const deleteContactById = async (req, res, next) => {
   }
 
   try {
-    console.log('Deleting contact with ID:', contactId);
     const result = await deleteContact(contactId, req.user._id);
-
     if (!result) {
-      console.error(
-        'Contact not found or not owned by user',
-        contactId,
-        req.user._id,
-      );
       return next(
-        createError(
-          404,
-          'Contact not found or you are not the owner of this contact',
-        ),
+        createError(404, 'Contact not found or you are not the owner'),
       );
     }
 
-    console.log('Successfully deleted contact:', result);
     return res.status(204).send();
   } catch (error) {
-    console.error('Error deleting contact:', error);
     return next(error);
   }
 };
