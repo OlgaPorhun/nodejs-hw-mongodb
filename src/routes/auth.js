@@ -7,6 +7,7 @@ import {
   logoutUser,
   sendResetEmail,
   resetPassword,
+  validateResetToken,
 } from '../controllers/auth.js';
 import { validateBody } from '../middlewares/validateBody.js';
 import {
@@ -45,24 +46,7 @@ router.post(
   ctrlWrapper(sendResetEmail),
 );
 
-router.get('/reset-password', (req, res) => {
-  const { token } = req.query;
-
-  if (!token) {
-    return res.status(400).json({ message: 'Token is missing.' });
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    res.status(200).json({
-      message: 'Token is valid, proceed to reset password.',
-      email: decoded.email,
-    });
-  } catch (error) {
-    return res.status(400).json({ message: 'Invalid or expired token.' });
-  }
-});
+router.get('/reset-password', ctrlWrapper(validateResetToken));
 
 router.post(
   '/reset-password',

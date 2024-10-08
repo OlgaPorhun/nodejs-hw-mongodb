@@ -201,8 +201,27 @@ export const sendResetEmail = async (req, res, next) => {
   }
 };
 
-export const resetPassword = async (req, res, next) => {
+export const validateResetToken = async (req, res, next) => {
   const { token } = req.query;
+
+  if (!token) {
+    return res.status(400).json({ message: 'Token is missing.' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    res.status(200).json({
+      message: 'Token is valid, proceed to reset password.',
+      email: decoded.email,
+    });
+  } catch (error) {
+    return res.status(400).json({ message: 'Invalid or expired token.' });
+  }
+};
+
+export const resetPassword = async (req, res, next) => {
+  const { token } = req.body;
   const { password } = req.body;
 
   try {
