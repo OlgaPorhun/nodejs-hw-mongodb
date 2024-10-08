@@ -203,7 +203,7 @@ export const sendResetEmail = async (req, res, next) => {
 
 export const resetPassword = async (req, res, next) => {
   const { token } = req.query;
-  const { newPassword } = req.body;
+  const { password } = req.body;
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -213,7 +213,7 @@ export const resetPassword = async (req, res, next) => {
       throw createError(404, 'User not found');
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     user.password = hashedPassword;
     await user.save();
 
