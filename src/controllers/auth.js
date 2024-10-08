@@ -175,7 +175,7 @@ export const sendResetEmail = async (req, res, next) => {
       throw createError(404, 'User not found!');
     }
 
-    const token = jwt.sign({ email }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
       expiresIn: '5m',
     });
 
@@ -221,14 +221,18 @@ export const validateResetToken = async (req, res, next) => {
 };
 
 export const resetPassword = async (req, res, next) => {
-  const { token } = req.body;
-  const { password } = req.body;
+  const { token, password } = req.body;
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+    if (!decoded.email) {
+      throw createError(400, 'Token does not contain a valid email.');
+    }
+
     const user = await User.findOne({ email: decoded.email });
     if (!user) {
+      console.log('User not found for email:', decoded.email);
       throw createError(404, 'User not found');
     }
 
