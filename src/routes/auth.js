@@ -45,10 +45,10 @@ router.post(
   ctrlWrapper(sendResetEmail),
 );
 
-router.get('/reset-password', ctrlWrapper(validateResetToken));
+router.get('/reset-pwd', ctrlWrapper(validateResetToken));
 
 router.post(
-  '/reset-password',
+  '/reset-pwd',
   validateBody(userResetPasswordSchema),
   ctrlWrapper(resetPassword),
 );
