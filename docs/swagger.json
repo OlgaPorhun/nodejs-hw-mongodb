@@ -377,7 +377,39 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "../../components/contact.yaml"
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "example": "John Doe"
+                    },
+                    "phoneNumber": {
+                      "type": "string",
+                      "example": "+1234567890"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "johndoe@example.com"
+                    },
+                    "isFavourite": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "contactType": {
+                      "type": "string",
+                      "enum": [
+                        "work",
+                        "home",
+                        "personal"
+                      ],
+                      "example": "work"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "phoneNumber",
+                    "contactType"
+                  ]
                 }
               }
             }
