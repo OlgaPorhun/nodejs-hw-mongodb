@@ -218,7 +218,7 @@
               "name": "sortOrder",
               "in": "query",
               "required": false,
-              "description": "Порядок сортування (asc або desc).",
+              "description": "Порядок сортування.",
               "schema": {
                 "type": "string",
                 "example": "asc"

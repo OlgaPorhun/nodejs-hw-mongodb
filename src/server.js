@@ -2,11 +2,13 @@ import express from 'express';
 import cors from 'cors';
 import pino from 'pino-http';
 import cookieParser from 'cookie-parser';
+import swaggerUi from 'swagger-ui-express';
 import contactsRouter from './routes/contacts.js';
 import authRouter from './routes/auth.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import { authenticateToken } from './middlewares/authenticateToken.js';
+import swaggerDocument from '../docs/swagger.json' assert { type: 'json' };
 
 function setupServer() {
   const app = express();
@@ -29,6 +31,8 @@ function setupServer() {
   app.get('/', (_, res) => {
     res.send('API is running');
   });
+
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
   app.use('/contacts', contactsRouter);
   app.use('/auth', authRouter);
