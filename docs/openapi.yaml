@@ -5,7 +5,11 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  description: Цей API надає розширений функціонал для управління обліковими записами користувачів та їхніми особистими контактами. Він включає функції реєстрації користувачів, автентифікації, скидання паролів та управління сесіями. Користувачі можуть створювати, оновлювати, видаляти та отримувати контакти, фільтрувати їх за типом або статусом улюбленого, а також завантажувати фотографії профілю, використовуючи безпечне хмарне зберігання.
+  description: |
+    Цей API надає розширений функціонал для управління обліковими записами користувачів та їхніми особистими контактами.
+    Він включає функції реєстрації користувачів, автентифікації, скидання паролів та управління сесіями.
+    Користувачі можуть створювати, оновлювати, видаляти та отримувати контакти, фільтрувати їх за типом або статусом улюбленого,
+    а також завантажувати фотографії профілю, використовуючи безпечне хмарне зберігання.
 
 servers:
   - url: https://nodejs-hw-mongodb-i55t.onrender.com
@@ -43,6 +47,16 @@ paths:
       responses:
         201:
           description: Користувача успішно зареєстровано.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully registered a user!
+                  data:
+                    $ref: "#/components/schemas/User"
         400:
           description: Некоректні дані.
 
@@ -74,7 +88,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  token:
+                  accessToken:
                     type: string
                     example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
         401:
@@ -103,3 +117,23 @@ components:
   schemas:
     Contact:
       $ref: "../swagger/components/contact.yaml"
+
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 67082b1bbaaded498ecab554
+        name:
+          type: string
+          example: "Jane Doe"
+        email:
+          type: string
+          example: "jane@example.com"
+        password:
+          type: string
+          example: "password123"
+      required:
+        - name
+        - email
+        - password

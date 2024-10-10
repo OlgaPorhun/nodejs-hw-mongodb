@@ -17,6 +17,10 @@ properties:
     example: true
   contactType:
     type: string
+    enum:
+      - work
+      - home
+      - personal
     example: work
 required:
   - name
