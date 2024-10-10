@@ -1,0 +1,34 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: API для управління контактами та користувачами
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  description: Цей API надає розширений функціонал для управління обліковими записами користувачів та їхніми особистими контактами. Він включає функції реєстрації користувачів, автентифікації, скидання паролів та управління сесіями. Користувачі можуть створювати, оновлювати, видаляти та отримувати контакти, фільтрувати їх за типом або статусом улюбленого, а також завантажувати фотографії профілю, використовуючи безпечне хмарне зберігання.
+tags:
+  - name: Contacts
+    description: Операції, пов'язані з контактами
+servers:
+  - url: https://nodejs-hw-mongodb-i55t.onrender.com
+paths:
+  /contacts/{contactId}:
+    get:
+      $ref: "../swagger/paths/contacts/{id}/get.yaml"
+    patch:
+      $ref: "../swagger/paths/contacts/{id}/patch.yaml"
+    delete:
+      $ref: "../swagger/paths/contacts/{id}/delete.yaml"
+  /contacts:
+    get:
+      $ref: "../swagger/paths/contacts/get.yaml"
+    post:
+      $ref: "../swagger/paths/contacts/post.yaml"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    Contact:
+      $ref: "../swagger/components/contact.yaml"

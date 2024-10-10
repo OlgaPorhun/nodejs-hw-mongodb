@@ -1,0 +1,23 @@
+post:
+  tags:
+    - Contacts
+  summary: Створити новий контакт
+  operationId: createContact
+  description: Створення нового контакту.
+  security:
+    - bearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../../components/contact.yaml"
+  responses:
+    201:
+      description: Контакт успішно створено.
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/contact.yaml"
+    400:
+      description: Невірний запит або вхідні дані.

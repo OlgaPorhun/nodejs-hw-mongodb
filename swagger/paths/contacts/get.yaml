@@ -1,0 +1,61 @@
+get:
+  tags:
+    - Contacts
+  summary: Отримати список контактів
+  operationId: getContacts
+  description: Отримання списку контактів із можливістю фільтрації за типом, статусом улюблених, а також пагінацією та сортуванням.
+  security:
+    - bearerAuth: []
+  parameters:
+    - name: page
+      in: query
+      required: false
+      description: Номер сторінки для пагінації.
+      schema:
+        type: integer
+        example: 1
+    - name: perPage
+      in: query
+      required: false
+      description: Кількість контактів на сторінку.
+      schema:
+        type: integer
+        example: 10
+    - name: type
+      in: query
+      required: false
+      description: Тип контактів (work, home, personal).
+      schema:
+        type: string
+        example: work
+    - name: isFavourite
+      in: query
+      required: false
+      description: Фільтрація контактів за статусом улюблених.
+      schema:
+        type: boolean
+    - name: sortBy
+      in: query
+      required: false
+      description: Поле для сортування контактів.
+      schema:
+        type: string
+        example: name
+    - name: sortOrder
+      in: query
+      required: false
+      description: Порядок сортування.
+      schema:
+        type: string
+        example: asc
+  responses:
+    200:
+      description: Список контактів успішно отримано.
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../../components/contact.yaml"
+    404:
+      description: Контактів не знайдено.
