@@ -5,19 +5,81 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  description: |
-    Цей API надає розширений функціонал для управління обліковими записами користувачів та їхніми особистими контактами. 
-    Він включає функції реєстрації користувачів, автентифікації, скидання паролів та управління сесіями. 
-    Користувачі можуть створювати, оновлювати, видаляти та отримувати контакти, фільтрувати їх за типом або статусом улюбленого, 
-    а також завантажувати фотографії профілю, використовуючи безпечне хмарне зберігання.
+  description: Цей API надає розширений функціонал для управління обліковими записами користувачів та їхніми особистими контактами. Він включає функції реєстрації користувачів, автентифікації, скидання паролів та управління сесіями. Користувачі можуть створювати, оновлювати, видаляти та отримувати контакти, фільтрувати їх за типом або статусом улюбленого, а також завантажувати фотографії профілю, використовуючи безпечне хмарне зберігання.
+
+servers:
+  - url: https://nodejs-hw-mongodb-i55t.onrender.com
+
+security:
+  - bearerAuth: []
+
 tags:
   - name: Contacts
     description: Операції, пов'язані з контактами
   - name: Auth
-    description: Операції, пов'язані з автентифікацією користувачів
-servers:
-  - url: https://nodejs-hw-mongodb-i55t.onrender.com
+    description: Операції, пов'язані з реєстрацією та авторизацією користувачів
+
 paths:
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Реєстрація нового користувача
+      operationId: registerUser
+      description: Створення нового користувача на платформі.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "user@example.com"
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        201:
+          description: Користувача успішно зареєстровано.
+        400:
+          description: Некоректні дані.
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Авторизація користувача
+      operationId: loginUser
+      description: Отримання Bearer токена для доступу до захищених ресурсів.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "user@example.com"
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        200:
+          description: Успішний вхід, повертається токен авторизації.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+        401:
+          description: Некоректні дані для входу.
+
   /contacts/{contactId}:
     get:
       $ref: "../swagger/paths/contacts/{id}/get.yaml"
@@ -25,80 +87,19 @@ paths:
       $ref: "../swagger/paths/contacts/{id}/patch.yaml"
     delete:
       $ref: "../swagger/paths/contacts/{id}/delete.yaml"
+
   /contacts:
     get:
       $ref: "../swagger/paths/contacts/get.yaml"
     post:
       $ref: "../swagger/paths/contacts/post.yaml"
-  /auth/register:
-    post:
-      tags:
-        - Auth
-      summary: Реєстрація нового користувача
-      operationId: registerUser
-      requestBody:
-        description: Дані для реєстрації
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                password:
-                  type: string
-                name:
-                  type: string
-      responses:
-        "201":
-          description: Успішна реєстрація
-        "400":
-          description: Невірні дані реєстрації
-  /auth/login:
-    post:
-      tags:
-        - Auth
-      summary: Логін користувача
-      operationId: loginUser
-      requestBody:
-        description: Дані для входу
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                password:
-                  type: string
-      responses:
-        "200":
-          description: Успішний вхід
-        "401":
-          description: Невірні дані для входу
+
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
+
   schemas:
     Contact:
       $ref: "../swagger/components/contact.yaml"
-    UserRegistration:
-      type: object
-      properties:
-        email:
-          type: string
-        password:
-          type: string
-        name:
-          type: string
-    UserLogin:
-      type: object
-      properties:
-        email:
-          type: string
-        password:
-          type: string
