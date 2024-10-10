@@ -12,15 +12,6 @@ post:
       application/json:
         schema:
           $ref: "../../components/contact.yaml"
-        examples:
-          contactExample:
-            summary: Приклад контакту
-            value:
-              name: "John Doe"
-              email: "johndoe@example.com"
-              phoneNumber: "+1234567890"
-              isFavourite: false
-              contactType: "work"
   responses:
     201:
       description: Контакт успішно створено.
