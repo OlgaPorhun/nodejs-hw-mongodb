@@ -1,6 +1,5 @@
 import express from 'express';
-import multer from 'multer';
-import { storage } from '../config/cloudinaryConfig.js';
+import { upload } from '../config/cloudinaryConfig.js';
 import {
   getContacts,
   getContactById,
@@ -16,8 +15,6 @@ import {
   contactCreateSchema,
   contactUpdateSchema,
 } from '../schemas/contactSchemas.js';
-
-const upload = multer({ storage });
 
 const router = express.Router();
 
