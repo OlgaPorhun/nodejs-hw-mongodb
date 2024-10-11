@@ -13,6 +13,7 @@ delete:
       description: ID контакту для видалення.
       schema:
         type: string
+        example: 5f8d0d55b54764421b7160c5
   responses:
     200:
       description: Контакт успішно видалено.

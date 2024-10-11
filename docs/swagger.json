@@ -207,7 +207,8 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "../../components/contact.yaml"
+                  "$ref": "../../components/contact.yaml",
+                  "example": "5f8d0d55b54764421b7160c5"
                 }
               }
             }
@@ -249,7 +250,8 @@
               "required": true,
               "description": "ID контакту для видалення.",
               "schema": {
-                "type": "string"
+                "type": "string",
+                "example": "5f8d0d55b54764421b7160c5"
               }
             }
           ],
