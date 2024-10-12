@@ -19,7 +19,10 @@ function setupServer() {
 
   app.use(
     cors({
-      origin: 'https://nodejs-hw-mongodb-i55t.onrender.com',
+      origin: [
+        'https://nodejs-hw-mongodb-i55t.onrender.com',
+        'http://localhost:3000',
+      ],
       credentials: true,
     }),
   );

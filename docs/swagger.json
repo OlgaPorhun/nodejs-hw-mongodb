@@ -7,7 +7,7 @@
       "name": "Apache 2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "description": "Цей API надає розширений функціонал для управління обліковими записами користувачів та їхніми особистими контактами.\nВін включає функції реєстрації користувачів, автентифікації, скидання паролів та управління сесіями.\nКористувачі можуть створювати, оновлювати, видаляти та отримувати контакти, фільтрувати їх за типом або статусом улюбленого,\nа також завантажувати фотографії профілю, використовуючи безпечне хмарне зберігання.\n"
+    "description": "Цей API надає розширений функціонал для управління обліковими записами користувачів та їхніми особистими контактами. Він включає функції реєстрації користувачів, автентифікації, скидання паролів та управління сесіями. Користувачі можуть створювати, оновлювати, видаляти та отримувати контакти, фільтрувати їх за типом або статусом улюбленого, а також завантажувати фотографії профілю, використовуючи безпечне хмарне зберігання."
   },
   "servers": [
     {
@@ -32,9 +32,7 @@
   "paths": {
     "/auth/register": {
       "post": {
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "summary": "Реєстрація нового користувача",
         "operationId": "registerUser",
         "description": "Створення нового користувача на платформі.",
@@ -86,9 +84,7 @@
     },
     "/auth/login": {
       "post": {
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "summary": "Авторизація користувача",
         "operationId": "loginUser",
         "description": "Отримання Bearer токена для доступу до захищених ресурсів.",
@@ -137,299 +133,270 @@
     },
     "/contacts/{contactId}": {
       "get": {
-        "get": {
-          "tags": [
-            "Contacts"
-          ],
-          "summary": "Отримати контакт за ID",
-          "operationId": "getContactById",
-          "description": "Отримання конкретного контакту за його ID.",
-          "security": [
-            {
-              "bearerAuth": []
-            }
-          ],
-          "parameters": [
-            {
-              "name": "contactId",
-              "in": "path",
-              "required": true,
-              "description": "ID контакту для отримання.",
-              "schema": {
-                "type": "string",
-                "example": "5f8d0d55b54764421b7160c5"
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "Контакт успішно отримано.",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "../../components/contact.yaml"
-                  }
-                }
-              }
-            },
-            "404": {
-              "description": "Контакт не знайдено."
+        "tags": ["Contacts"],
+        "summary": "Отримати контакт за ID",
+        "operationId": "getContactById",
+        "description": "Отримання конкретного контакту за його ID.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "contactId",
+            "in": "path",
+            "required": true,
+            "description": "ID контакту для отримання.",
+            "schema": {
+              "type": "string",
+              "example": "5f8d0d55b54764421b7160c5"
             }
           }
-        }
-      },
-      "patch": {
-        "patch": {
-          "tags": [
-            "Contacts"
-          ],
-          "summary": "Оновити контакт за ID",
-          "operationId": "updateContact",
-          "description": "Оновлення інформації про контакт за його ID.",
-          "security": [
-            {
-              "bearerAuth": []
-            }
-          ],
-          "parameters": [
-            {
-              "name": "contactId",
-              "in": "path",
-              "required": true,
-              "description": "ID контакту для оновлення.",
-              "schema": {
-                "type": "string"
-              }
-            }
-          ],
-          "requestBody": {
-            "required": true,
+        ],
+        "responses": {
+          "200": {
+            "description": "Контакт успішно отримано.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "../../components/contact.yaml",
-                  "example": "5f8d0d55b54764421b7160c5"
+                  "$ref": "#/components/schemas/contact"
                 }
               }
             }
           },
-          "responses": {
-            "200": {
-              "description": "Контакт успішно оновлено.",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "../../components/contact.yaml"
-                  }
+          "404": {
+            "description": "Контакт не знайдено."
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Contacts"],
+        "summary": "Оновити контакт за ID",
+        "operationId": "updateContact",
+        "description": "Оновлення інформації про контакт за його ID.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "contactId",
+            "in": "path",
+            "required": true,
+            "description": "ID контакту для оновлення.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/contact"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Контакт успішно оновлено.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/contact"
                 }
               }
-            },
-            "404": {
-              "description": "Контакт не знайдено."
             }
+          },
+          "404": {
+            "description": "Контакт не знайдено."
           }
         }
       },
       "delete": {
-        "delete": {
-          "tags": [
-            "Contacts"
-          ],
-          "summary": "Видалити контакт за ID",
-          "operationId": "deleteContact",
-          "description": "Видалення контакту за його ID.",
-          "security": [
-            {
-              "bearerAuth": []
+        "tags": ["Contacts"],
+        "summary": "Видалити контакт за ID",
+        "operationId": "deleteContact",
+        "description": "Видалення контакту за його ID.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "contactId",
+            "in": "path",
+            "required": true,
+            "description": "ID контакту для видалення.",
+            "schema": {
+              "type": "string",
+              "example": "5f8d0d55b54764421b7160c5"
             }
-          ],
-          "parameters": [
-            {
-              "name": "contactId",
-              "in": "path",
-              "required": true,
-              "description": "ID контакту для видалення.",
-              "schema": {
-                "type": "string",
-                "example": "5f8d0d55b54764421b7160c5"
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "Контакт успішно видалено."
-            },
-            "404": {
-              "description": "Контакт не знайдено."
-            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Контакт успішно видалено."
+          },
+          "404": {
+            "description": "Контакт не знайдено."
           }
         }
       }
     },
     "/contacts": {
       "get": {
-        "get": {
-          "tags": [
-            "Contacts"
-          ],
-          "summary": "Отримати список контактів",
-          "operationId": "getContacts",
-          "description": "Отримання списку контактів із можливістю фільтрації за типом, статусом улюблених, а також пагінацією та сортуванням.",
-          "security": [
-            {
-              "bearerAuth": []
+        "tags": ["Contacts"],
+        "summary": "Отримати список контактів",
+        "operationId": "getContacts",
+        "description": "Отримання списку контактів із можливістю фільтрації за типом, статусом улюблених, а також пагінацією та сортуванням.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "Номер сторінки для пагінації.",
+            "schema": {
+              "type": "integer",
+              "example": 1
             }
-          ],
-          "parameters": [
-            {
-              "name": "page",
-              "in": "query",
-              "required": false,
-              "description": "Номер сторінки для пагінації.",
-              "schema": {
-                "type": "integer",
-                "example": 1
-              }
-            },
-            {
-              "name": "perPage",
-              "in": "query",
-              "required": false,
-              "description": "Кількість контактів на сторінку.",
-              "schema": {
-                "type": "integer",
-                "example": 10
-              }
-            },
-            {
-              "name": "type",
-              "in": "query",
-              "required": false,
-              "description": "Тип контактів (work, home, personal).",
-              "schema": {
-                "type": "string",
-                "example": "work"
-              }
-            },
-            {
-              "name": "isFavourite",
-              "in": "query",
-              "required": false,
-              "description": "Фільтрація контактів за статусом улюблених.",
-              "schema": {
-                "type": "boolean"
-              }
-            },
-            {
-              "name": "sortBy",
-              "in": "query",
-              "required": false,
-              "description": "Поле для сортування контактів.",
-              "schema": {
-                "type": "string",
-                "example": "name"
-              }
-            },
-            {
-              "name": "sortOrder",
-              "in": "query",
-              "required": false,
-              "description": "Порядок сортування.",
-              "schema": {
-                "type": "string",
-                "example": "asc"
-              }
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "required": false,
+            "description": "Кількість контактів на сторінку.",
+            "schema": {
+              "type": "integer",
+              "example": 10
             }
-          ],
-          "responses": {
-            "200": {
-              "description": "Список контактів успішно отримано.",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "../../components/contact.yaml"
-                    }
-                  }
-                }
-              }
-            },
-            "404": {
-              "description": "Контактів не знайдено."
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "description": "Тип контактів (work, home, personal).",
+            "schema": {
+              "type": "string",
+              "example": "work"
+            }
+          },
+          {
+            "name": "isFavourite",
+            "in": "query",
+            "required": false,
+            "description": "Фільтрація контактів за статусом улюблених.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "description": "Поле для сортування контактів.",
+            "schema": {
+              "type": "string",
+              "example": "name"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "required": false,
+            "description": "Порядок сортування.",
+            "schema": {
+              "type": "string",
+              "example": "asc"
             }
           }
-        }
-      },
-      "post": {
-        "post": {
-          "tags": [
-            "Contacts"
-          ],
-          "summary": "Створити новий контакт",
-          "operationId": "createContact",
-          "description": "Створення нового контакту.",
-          "security": [
-            {
-              "bearerAuth": []
-            }
-          ],
-          "requestBody": {
-            "required": true,
+        ],
+        "responses": {
+          "200": {
+            "description": "Список контактів успішно отримано.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "name": {
-                      "type": "string",
-                      "example": "John Doe"
-                    },
-                    "phoneNumber": {
-                      "type": "string",
-                      "example": "+1234567890"
-                    },
-                    "email": {
-                      "type": "string",
-                      "example": "johndoe@example.com"
-                    },
-                    "isFavourite": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "contactType": {
-                      "type": "string",
-                      "enum": [
-                        "work",
-                        "home",
-                        "personal"
-                      ],
-                      "example": "work"
-                    }
-                  },
-                  "required": [
-                    "name",
-                    "phoneNumber",
-                    "contactType"
-                  ]
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/contact"
+                  }
                 }
               }
             }
           },
-          "responses": {
-            "201": {
-              "description": "Контакт успішно створено.",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "../../components/contact.yaml"
+          "404": {
+            "description": "Контактів не знайдено."
+          }
+        }
+      },
+      "post": {
+        "tags": ["Contacts"],
+        "summary": "Створити новий контакт",
+        "operationId": "createContact",
+        "description": "Створення нового контакту.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                  },
+                  "phoneNumber": {
+                    "type": "string",
+                    "example": "+1234567890"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "johndoe@example.com"
+                  },
+                  "isFavourite": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "contactType": {
+                    "type": "string",
+                    "enum": ["work", "home", "personal"],
+                    "example": "work"
                   }
+                },
+                "required": ["name", "phoneNumber", "contactType"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Контакт успішно створено.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/contact"
                 }
               }
-            },
-            "400": {
-              "description": "Невірний запит або вхідні дані."
             }
+          },
+          "400": {
+            "description": "Невірний запит або вхідні дані."
           }
         }
       }
@@ -443,9 +410,6 @@
       }
     },
     "schemas": {
-      "Contact": {
-        "$ref": "#/components/schemas/contact"
-      },
       "User": {
         "type": "object",
         "properties": {
@@ -466,11 +430,7 @@
             "example": "password123"
           }
         },
-        "required": [
-          "name",
-          "email",
-          "password"
-        ]
+        "required": ["name", "email", "password"]
       },
       "contact": {
         "type": "object",
@@ -485,7 +445,7 @@
           },
           "phoneNumber": {
             "type": "string",
-            "example": 1234567890
+            "example": "+1234567890"
           },
           "email": {
             "type": "string",
@@ -497,19 +457,11 @@
           },
           "contactType": {
             "type": "string",
-            "enum": [
-              "work",
-              "home",
-              "personal"
-            ],
+            "enum": ["work", "home", "personal"],
             "example": "work"
           }
         },
-        "required": [
-          "name",
-          "phoneNumber",
-          "contactType"
-        ]
+        "required": ["name", "phoneNumber", "contactType"]
       }
     }
   }
