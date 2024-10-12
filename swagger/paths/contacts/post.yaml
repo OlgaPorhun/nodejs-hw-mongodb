@@ -1,47 +1,46 @@
-post:
-  tags:
-    - Contacts
-  summary: Створити новий контакт
-  operationId: createContact
-  description: Створення нового контакту.
-  security:
-    - bearerAuth: []
-  requestBody:
-    required: true
+tags:
+  - Contacts
+summary: Створити новий контакт
+operationId: createContact
+description: Створення нового контакту.
+security:
+  - bearerAuth: []
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          name:
+            type: string
+            example: "John Doe"
+          phoneNumber:
+            type: string
+            example: "+1234567890"
+          email:
+            type: string
+            example: "johndoe@example.com"
+          isFavourite:
+            type: boolean
+            example: true
+          contactType:
+            type: string
+            enum:
+              - work
+              - home
+              - personal
+            example: work
+        required:
+          - name
+          - phoneNumber
+          - contactType
+responses:
+  201:
+    description: Контакт успішно створено.
     content:
       application/json:
         schema:
-          type: object
-          properties:
-            name:
-              type: string
-              example: "John Doe"
-            phoneNumber:
-              type: string
-              example: "+1234567890"
-            email:
-              type: string
-              example: "johndoe@example.com"
-            isFavourite:
-              type: boolean
-              example: true
-            contactType:
-              type: string
-              enum:
-                - work
-                - home
-                - personal
-              example: work
-          required:
-            - name
-            - phoneNumber
-            - contactType
-  responses:
-    201:
-      description: Контакт успішно створено.
-      content:
-        application/json:
-          schema:
-            $ref: "../../components/contact.yaml"
-    400:
-      description: Невірний запит або вхідні дані.
+          $ref: "../../components/contact.yaml"
+  400:
+    description: Невірний запит або вхідні дані.

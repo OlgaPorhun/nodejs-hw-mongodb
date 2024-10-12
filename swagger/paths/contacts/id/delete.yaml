@@ -1,21 +1,20 @@
-delete:
-  tags:
-    - Contacts
-  summary: Видалити контакт за ID
-  operationId: deleteContact
-  description: Видалення контакту за його ID.
-  security:
-    - bearerAuth: []
-  parameters:
-    - name: contactId
-      in: path
-      required: true
-      description: ID контакту для видалення.
-      schema:
-        type: string
-        example: 5f8d0d55b54764421b7160c5
-  responses:
-    200:
-      description: Контакт успішно видалено.
-    404:
-      description: Контакт не знайдено.
+tags:
+  - Contacts
+summary: Видалити контакт за ID
+operationId: deleteContact
+description: Видалення контакту за його ID.
+security:
+  - bearerAuth: []
+parameters:
+  - name: contactId
+    in: path
+    required: true
+    description: ID контакту для видалення.
+    schema:
+      type: string
+      example: 5f8d0d55b54764421b7160c5
+responses:
+  200:
+    description: Контакт успішно видалено.
+  404:
+    description: Контакт не знайдено.
