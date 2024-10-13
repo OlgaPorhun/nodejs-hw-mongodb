@@ -132,9 +132,29 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Contact"
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "John Doe"
+                phoneNumber:
+                  type: string
+                  example: "+123456789"
+                email:
+                  type: string
+                  example: "john.doe@example.com"
+                isFavourite:
+                  type: boolean
+                  example: true
+                contactType:
+                  type: string
+                  enum: ["work", "home", "personal"]
+                  example: "work"
+                photo:
+                  type: string
+                  format: binary
       responses:
         200:
           description: Контакт успішно оновлено.
@@ -231,9 +251,29 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Contact"
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "John Doe"
+                phoneNumber:
+                  type: string
+                  example: "+123456789"
+                email:
+                  type: string
+                  example: "johndoe@example.com"
+                isFavourite:
+                  type: boolean
+                  example: true
+                contactType:
+                  type: string
+                  enum: ["work", "home", "personal"]
+                  example: "work"
+                photo:
+                  type: string
+                  format: binary
       responses:
         201:
           description: Контакт успішно створено.
@@ -276,6 +316,9 @@ components:
             - home
             - personal
           example: work
+        photo:
+          type: string
+          format: binary
       required:
         - name
         - phoneNumber
