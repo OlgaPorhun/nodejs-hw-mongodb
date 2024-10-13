@@ -7,6 +7,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// Використовуємо multer для збереження файлів у пам'ять
 const storage = multer.memoryStorage();
 
 const upload = multer({ storage });

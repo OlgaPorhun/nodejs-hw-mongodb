@@ -118,7 +118,14 @@ export const createContact = async (req, res, next) => {
   try {
     let photoUrl = null;
     if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path);
+      const result = await new Promise((resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream((error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          })
+          .end(req.file.buffer);
+      });
       photoUrl = result.secure_url;
     }
 
@@ -154,7 +161,14 @@ export const updateContactById = async (req, res, next) => {
 
   try {
     if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path);
+      const result = await new Promise((resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream((error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          })
+          .end(req.file.buffer);
+      });
       updateData.photo = result.secure_url;
     }
 
