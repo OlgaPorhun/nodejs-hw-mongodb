@@ -118,15 +118,23 @@ export const createContact = async (req, res, next) => {
   try {
     let photoUrl = null;
     if (req.file) {
-      const result = await new Promise((resolve, reject) => {
-        cloudinary.uploader
-          .upload_stream((error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          })
-          .end(req.file.buffer);
-      });
-      photoUrl = result.secure_url;
+      try {
+        const result = await new Promise((resolve, reject) => {
+          cloudinary.uploader
+            .upload_stream((error, result) => {
+              if (error) {
+                console.error('Error uploading photo to Cloudinary:', error);
+                return reject(new Error('Failed to upload photo'));
+              } else {
+                resolve(result);
+              }
+            })
+            .end(req.file.buffer);
+        });
+        photoUrl = result.secure_url;
+      } catch (uploadError) {
+        return next(createError(500, 'Photo upload failed, please try again.'));
+      }
     }
 
     const newContact = await createNewContact({
@@ -161,15 +169,23 @@ export const updateContactById = async (req, res, next) => {
 
   try {
     if (req.file) {
-      const result = await new Promise((resolve, reject) => {
-        cloudinary.uploader
-          .upload_stream((error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          })
-          .end(req.file.buffer);
-      });
-      updateData.photo = result.secure_url;
+      try {
+        const result = await new Promise((resolve, reject) => {
+          cloudinary.uploader
+            .upload_stream((error, result) => {
+              if (error) {
+                console.error('Error uploading photo to Cloudinary:', error);
+                return reject(new Error('Failed to upload photo'));
+              } else {
+                resolve(result);
+              }
+            })
+            .end(req.file.buffer);
+        });
+        updateData.photo = result.secure_url;
+      } catch (uploadError) {
+        return next(createError(500, 'Photo upload failed, please try again.'));
+      }
     }
 
     const updatedContact = await updateContact(
