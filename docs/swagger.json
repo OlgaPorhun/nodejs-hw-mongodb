@@ -194,9 +194,36 @@
         "requestBody": {
           "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/contact"
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                  },
+                  "phoneNumber": {
+                    "type": "string",
+                    "example": "+123456789"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "johndoe@example.com"
+                  },
+                  "isFavourite": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "contactType": {
+                    "type": "string",
+                    "enum": ["work", "home", "personal"],
+                    "example": "work"
+                  },
+                  "photo": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
               }
             }
           }
@@ -353,7 +380,7 @@
         "requestBody": {
           "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "type": "object",
                 "properties": {
@@ -377,6 +404,10 @@
                     "type": "string",
                     "enum": ["work", "home", "personal"],
                     "example": "work"
+                  },
+                  "photo": {
+                    "type": "string",
+                    "format": "binary"
                   }
                 },
                 "required": ["name", "phoneNumber", "contactType"]
